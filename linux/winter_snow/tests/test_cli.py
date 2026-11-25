@@ -271,12 +271,14 @@ class FakeWindow:
 
 
 class FakeDisplay:
-    def __init__(self, windows, client_ids=None, screen_h=800, tree_ids=None):
+    def __init__(self, windows, client_ids=None, screen_h=800, tree_ids=None,
+                 stacking_ids=None):
         self.windows = {window.wid: window for window in windows}
         self.screen_h = screen_h
         children = client_ids if tree_ids is None else tree_ids
         root = SimpleNamespace(
             client_ids=client_ids,
+            stacking_ids=stacking_ids,
             get_full_property=self._root_property,
             query_tree=lambda: SimpleNamespace(
                 children=[SimpleNamespace(id=wid) for wid in (children or [])]
@@ -285,9 +287,11 @@ class FakeDisplay:
         self._screen = SimpleNamespace(root=root, height_in_pixels=screen_h)
 
     def _root_property(self, atom, kind):
-        list_ids = self._screen.root.client_ids
-        if atom == "_NET_CLIENT_LIST" and list_ids is not None:
-            return SimpleNamespace(value=list(list_ids))
+        root = self._screen.root
+        if atom == "_NET_CLIENT_LIST_STACKING" and root.stacking_ids is not None:
+            return SimpleNamespace(value=list(root.stacking_ids))
+        if atom == "_NET_CLIENT_LIST" and root.client_ids is not None:
+            return SimpleNamespace(value=list(root.client_ids))
         return None
 
     def intern_atom(self, name, only_if_exists=False):
@@ -300,7 +304,7 @@ class FakeDisplay:
         return self.windows.get(wid)
 
 
-def test_read_windows_prefers_client_list_and_filters():
+def test_read_windows_falls_back_to_client_list_and_filters():
     windows = [
         FakeWindow(10, 100, 50, 200, 100),
         FakeWindow(11, 100, 50, 60, 100),               # too narrow
@@ -311,6 +315,18 @@ def test_read_windows_prefers_client_list_and_filters():
     got = xw.read_windows(exclude_xid=13, display_obj=display)
     assert [window.id for window in got] == [10]
     assert (got[0].l, got[0].t, got[0].r, got[0].b) == (100, 50, 300, 150)
+
+
+def test_read_windows_uses_stacking_order_front_first():
+    # EWMH: _NET_CLIENT_LIST is oldest-first mapping order, while
+    # _NET_CLIENT_LIST_STACKING is bottom-to-top.  The latest-mapped window is
+    # on top, so the front-most overlapping window must come first.
+    behind = FakeWindow(31, 100, 50, 200, 100)
+    front = FakeWindow(32, 120, 60, 200, 100)
+    display = FakeDisplay([behind, front], client_ids=[31, 32],
+                          stacking_ids=[31, 32])
+    got = xw.read_windows(display_obj=display)
+    assert [window.id for window in got] == [32, 31]
 
 
 def test_read_windows_falls_back_to_query_tree():

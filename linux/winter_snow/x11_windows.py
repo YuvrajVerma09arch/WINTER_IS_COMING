@@ -33,7 +33,23 @@ def _display(display_obj=None, env=None):
 
 
 def _client_ids(display_obj, root):
-    """Prefer _NET_CLIENT_LIST (front-to-back as returned) over query_tree."""
+    """Return client ids front-to-back for the snow simulation.
+
+    EWMH defines _NET_CLIENT_LIST_STACKING as bottom-to-top stacking order and
+    _NET_CLIENT_LIST as initial mapping order (oldest first).  The simulation
+    walks windows front-to-back, so the stacking property must be reversed;
+    the mapping-order property is only the least-bad fallback.  QueryTree also
+    returns children bottom-to-top, so that fallback is reversed as well.
+    See https://specifications.freedesktop.org/wm-spec/wm-spec-1.4.html
+    """
+    try:
+        prop = root.get_full_property(
+            display_obj.intern_atom("_NET_CLIENT_LIST_STACKING"), ANY_PROPERTY_TYPE
+        )
+        if prop is not None and prop.value:
+            return [int(wid) for wid in reversed(prop.value)]
+    except Exception:
+        pass
     try:
         prop = root.get_full_property(
             display_obj.intern_atom("_NET_CLIENT_LIST"), ANY_PROPERTY_TYPE
@@ -43,7 +59,8 @@ def _client_ids(display_obj, root):
     except Exception:
         pass
     try:
-        return [int(child.id) for child in root.query_tree().children]
+        children = root.query_tree().children
+        return [int(child.id) for child in reversed(list(children))]
     except Exception:
         return []
 
