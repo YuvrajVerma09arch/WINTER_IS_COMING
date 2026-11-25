@@ -13,7 +13,8 @@ try:
 except Exception:  # pragma: no cover - depends on the host
     X = Xutil = display = None
 
-IS_VIEWABLE = Xutil.IsViewable if Xutil is not None else 1
+# python-xlib defines IsViewable (= 2) in Xlib.X, not in Xlib.Xutil.
+IS_VIEWABLE = getattr(X, "IsViewable", 2) if X is not None else 2
 ANY_PROPERTY_TYPE = X.AnyPropertyType if X is not None else 0
 
 MIN_WIDTH = 80

@@ -1,6 +1,8 @@
 """Tests for the CLI, diagnose mode and the guarded X11/GTK platform layer."""
 
+import importlib.util
 import io
+import sys
 from types import SimpleNamespace
 
 import pytest
@@ -249,7 +251,7 @@ def test_gtk_and_x11_modules_import_without_a_display():
 # --------------------------------------------------------------------------
 
 class FakeWindow:
-    def __init__(self, wid, x, y, w, h, map_state=1, types=None):
+    def __init__(self, wid, x, y, w, h, map_state=2, types=None):
         self.wid = wid
         self.x, self.y, self.w, self.h = x, y, w, h
         self.map_state = map_state
@@ -302,6 +304,28 @@ class FakeDisplay:
 
     def create_resource_object(self, kind, wid):
         return self.windows.get(wid)
+
+
+def test_x11_module_imports_with_real_xlib_layout_and_viewable_state(monkeypatch):
+    # python-xlib defines IsViewable in Xlib.X (value 2), not in Xlib.Xutil.
+    # A real X11 host must import the module and treat map_state == 2 as viewable.
+    fake_xlib = SimpleNamespace(
+        X=SimpleNamespace(IsViewable=2, AnyPropertyType=0),
+        Xutil=SimpleNamespace(),  # deliberately has no IsViewable
+        display=SimpleNamespace(Display=lambda name=None: None),
+    )
+    monkeypatch.setitem(sys.modules, "Xlib", fake_xlib)
+    spec = importlib.util.spec_from_file_location(
+        "winter_snow._x11_windows_xlib_probe", xw.__file__
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    assert module.IS_VIEWABLE == 2
+    viewable = FakeWindow(41, 10, 10, 120, 80, map_state=2)
+    hidden = FakeWindow(42, 10, 10, 120, 80, map_state=1)
+    display = FakeDisplay([viewable, hidden], client_ids=[41, 42])
+    assert [window.id for window in module.read_windows(display_obj=display)] == [41]
 
 
 def test_read_windows_falls_back_to_client_list_and_filters():
