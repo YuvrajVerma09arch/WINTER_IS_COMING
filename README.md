@@ -72,19 +72,19 @@ Install the Python bindings for GTK 3 and Cairo, plus python-xlib for the window
 Ubuntu/Debian:
 
 ```sh
-sudo apt install python3-gi python3-gi-cairo gir1.2-gtk-3.0 python3-xlib
+sudo apt install python3 python3-gi python3-gi-cairo gir1.2-gtk-3.0 python3-xlib
 ```
 
 Fedora:
 
 ```sh
-sudo dnf install pygobject3 gtk3 python3-xlib
+sudo dnf install python3 python3-gobject python3-cairo gtk3 python3-xlib
 ```
 
 Arch:
 
 ```sh
-sudo pacman -S python-gobject gtk3 python-xlib
+sudo pacman -S python gtk3 python-gobject python-cairo python-xlib
 ```
 
 Then run it, or check your setup first:
