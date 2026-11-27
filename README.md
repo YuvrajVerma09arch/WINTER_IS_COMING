@@ -1,65 +1,58 @@
-#           ❄︎ WinterIsComing ❄︎
+# ❄︎ WinterIsComing ❄︎
 
-Let it snow on your Mac! ☃️
+A little snowfall for your desktop, on Mac and Windows ☃️
 
-Snow falls on your desktop and piles up on your windows and Dock. Roll it into snowballs and build a little snowman. It's all one Swift file, and every flake is drawn in code.
+Snow drifts down and settles on your windows, the Dock and the taskbar. Roll it into snowballs, stack them into a snowman, and hang some fairy lights while you're at it.
 
 <!-- ![demo](docs/demo.gif) -->
 
-## What it can do ✨
+## 🎁 Download
 
-- **Cozy snowfall**: three layers of flakes (near, middle and far) drifting in a gentle wind
-- **Snow piles up** on top of your windows, along the Dock and at the bottom of the screen
-- **Drag a window and *whoosh*!** The snow flies off. The faster you drag, the farther it goes
-- **Roll snowballs** just by moving your mouse sideways over the snow (no clicking!). They grow as they roll
-- **Snowballs push each other** along, and one that's pushed off the edge falls down
-- **Hold a snowball** with the left mouse button and carry it anywhere
-- **Stack three snowballs** and they turn into a snowman with a carrot nose and a red scarf
-- **A falling snowball goes *poof*** into a soft heap of snow, ready to be rolled again
-- **Fairy lights**: colorful twinkling lights that swing into place along the top of your windows. They're off by default, so turn them on from the ❄︎ menu (or press `L`)
+| | |
+|---|---|
+| **Mac** | [WinterIsComing-mac-v1.0.zip](https://github.com/yike-shi/WINTER_IS_COMING/releases/latest) · unzip, move it to Applications, open it |
+| **Windows** (beta) | [WinterIsComing-windows-v0.1-beta.zip](https://github.com/yike-shi/WINTER_IS_COMING/releases/tag/windows-v0.1) · unzip, open `WinterIsComing.exe` |
 
-## How to play 🎮
+On the release page, grab the zip with the app's name (not the "Source code" ones).
 
-- **Roll a snowball**: slide your mouse sideways over snow on a window, the Dock or the ground
-- **Push it**: roll one snowball into another and it gets shoved along
-- **Carry it**: hold the left mouse button on a snowball and drag
-- **Build a snowman**: stack three snowballs on top of each other ⛄
-- **Make it fly**: drag a window and watch the snow whoosh off
-- **Hang the lights**: ❄︎ menu → **Fairy Lights** ✨
-- **Forgot something?** ❄︎ menu → **How to Play**
+**The first time you open it**, your computer may stop it, because the app isn't signed with a paid developer account yet:
 
-## Download 🎁
+- **Mac**: click **Done**, then go to **System Settings → Privacy & Security** and click **Open Anyway**. Just once, and you're all set.
+- **Windows**: click **More info → Run anyway**.
 
-1. Grab `WinterIsComing-mac-vX.zip` from [Releases](https://github.com/yike-shi/WINTER_IS_COMING/releases/latest) (not the "Source code" ones)
-2. Unzip it and drag **WinterIsComing** into your Applications folder
-3. Double-click it. The first time, macOS will say it can't open the app. Click **Done**, then go to **System Settings → Privacy & Security**, scroll down and click **Open Anyway**. You only need to do this once ✨
+Don't worry, the app never connects to the internet, and all of its code is right here 💙
 
-> 🙏 **Why does macOS block it?** This is an early version, and it isn't signed with a paid Apple Developer account yet, so macOS doesn't recognize it. It's not a virus, promise! The app never connects to the internet, and all the code is right here for you to read. Thanks for your patience while I work on it 💙
+## ✨ What you can do
 
-## Build it yourself 🛠️
+- **Watch it snow**: flakes drift down in three soft layers and pile up on your windows
+- **Drag a window**: the snow on top slides right off
+- **Roll a snowball**: move your mouse sideways over the snow, no clicking needed
+- **Push it**: roll one snowball into another and give it a nudge
+- **Carry it**: hold the left mouse button on a snowball and take it anywhere
+- **Build a snowman**: stack three snowballs, and he gets a carrot nose and a red scarf ⛄
+- **Hang fairy lights**: turn them on from the menu and watch them swing into place
+
+Everything else lives in the ❄︎ menu: in the menu bar on Mac, in the system tray on Windows (click **^** if you don't see it). Pause, change how much snow falls, clear it, or peek at how to play again.
+
+On Mac, for snow on the Dock too, allow **WinterIsComing** in System Settings → Privacy & Security → Accessibility.
+
+## 🛠️ Build it yourself
+
+**Mac** (needs `swiftc`; run `xcode-select --install` if you don't have it)
 
 ```sh
 git clone https://github.com/yike-shi/WINTER_IS_COMING.git
 cd WINTER_IS_COMING
-zsh build.sh
+zsh build.sh            # run it
+zsh make_app.sh 1.0     # or package it as an .app
 ```
 
-Use the ❄︎ in the menu bar to pause, pick light, medium or heavy snow, switch the fairy lights on, clear the snow, or quit.
-
-- No `swiftc`? Run `xcode-select --install` first.
-- Want snow on the Dock too? Turn on **WinterIsComing** (or **Terminal**, if you run it with `build.sh`) in System Settings → Privacy & Security → Accessibility.
-- Want your own `.app`? Run `zsh make_app.sh 1.0`.
-
-## Windows version 🪟 (beta)
-
-You asked for it, so here it is! Snow falls on your Windows desktop and piles up on your windows and the taskbar, and dragging a window still sends it flying. Snowballs and snowmen are coming soon ⛄
+**Windows** (needs the [.NET 8 SDK](https://dotnet.microsoft.com/download))
 
 ```sh
 cd WINTER_IS_COMING/windows
 dotnet run -c Release
 ```
-
-Use the ❄ icon in the system tray to pause, pick the snow amount, clear the snow, or quit. You'll need the [.NET 8 SDK](https://dotnet.microsoft.com/download) (`winget install Microsoft.DotNet.SDK.8`).
 
 ## Linux version 🐧 (beta)
 
@@ -96,10 +89,10 @@ python3 linux/winter_snow/main.py --diagnose
 
 `--diagnose` just prints what it finds — it never opens a window, so it's handy when something looks off. On Wayland, installing `gtk-layer-shell` gives you a full-screen overlay layer.
 
-## Make it yours 🎨
+## 🎨 Make it yours
 
-Every setting lives at the top of `WinterIsComing.swift` (`enum Cfg`): how many flakes fall, how fast they fall, how tall the piles get, how big a snowball can grow… Change a number and run `zsh build.sh` again.
+Every setting lives at the top of `WinterIsComing.swift` and `windows/Program.cs`: how much snow falls, how fast, how big a snowball can grow. Change a number and run it again.
 
-## License
+## 💙 License
 
 [MIT](LICENSE) · Made with 💙 and a little help from Claude
